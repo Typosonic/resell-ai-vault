@@ -67,26 +67,26 @@ export function Features() {
             Everything You Need to Build Your
             <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"> AI Empire</span>
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-12">
             Stop building from scratch. Access our vault of proven AI automations and start selling immediately.
           </p>
+          
+          <div className="flex justify-center mb-12">
+            <div className="relative max-w-sm mx-auto">
+              <img 
+                src="/lovable-uploads/15781f1c-635f-492f-9c1e-7c3a8e851de1.png" 
+                alt="Stripe payment notifications showing successful payments" 
+                className="rounded-2xl shadow-2xl"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent rounded-2xl"></div>
+            </div>
+          </div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 relative z-10 py-10 max-w-7xl mx-auto">
           {features.map((feature, index) => (
             <Feature key={feature.title} {...feature} index={index} />
           ))}
-        </div>
-        
-        <div className="mt-16 flex justify-center">
-          <div className="relative max-w-sm mx-auto">
-            <img 
-              src="/lovable-uploads/15781f1c-635f-492f-9c1e-7c3a8e851de1.png" 
-              alt="Stripe payment notifications showing successful payments" 
-              className="rounded-2xl shadow-2xl"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent rounded-2xl"></div>
-          </div>
         </div>
       </div>
     </section>

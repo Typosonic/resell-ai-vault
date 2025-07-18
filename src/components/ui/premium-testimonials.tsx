@@ -451,7 +451,7 @@ export function PremiumTestimonials() {
           {[
             { number: "4.9/5", label: "Average Rating" },
             { number: "1,000+", label: "Happy Customers" },
-            { number: "$50M+", label: "Revenue Generated" },
+            { number: "10k+", label: "Downloads" },
             { number: "99.9%", label: "Uptime" }
           ].map((stat, index) => (
             <motion.div

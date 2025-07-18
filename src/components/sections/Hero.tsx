@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { RainbowButton } from "@/components/ui/rainbow-button";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { ArrowRight, Eye } from "lucide-react";
 import { LampContainer } from "@/components/ui/lamp";
 import { motion } from "framer-motion";
@@ -45,20 +46,41 @@ export function Hero() {
         className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-12"
       >
         <Link to="/library">
-          <RainbowButton className="px-8 py-4 text-lg font-semibold h-auto">
-            Unlock the Vault
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </RainbowButton>
+          <div className="relative">
+            <GlowingEffect
+              spread={40}
+              glow={true}
+              disabled={false}
+              proximity={64}
+              inactiveZone={0.01}
+              borderWidth={2}
+            />
+            <RainbowButton className="px-8 py-4 text-lg font-semibold h-auto">
+              Unlock the Vault
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </RainbowButton>
+          </div>
         </Link>
         <Link to="/library">
-          <Button 
-            size="lg" 
-            variant="outline" 
-            className="px-8 py-4 text-lg font-semibold border-white/30 text-white hover:bg-white/10"
-          >
-            <Eye className="mr-2 h-5 w-5" />
-            Browse Library
-          </Button>
+          <div className="relative">
+            <GlowingEffect
+              spread={40}
+              glow={true}
+              disabled={false}
+              proximity={64}
+              inactiveZone={0.01}
+              borderWidth={2}
+              variant="white"
+            />
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="px-8 py-4 text-lg font-semibold border-white/30 text-white hover:bg-white/10"
+            >
+              <Eye className="mr-2 h-5 w-5" />
+              Browse Library
+            </Button>
+          </div>
         </Link>
       </motion.div>
     </LampContainer>

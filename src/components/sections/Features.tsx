@@ -77,6 +77,17 @@ export function Features() {
             <Feature key={feature.title} {...feature} index={index} />
           ))}
         </div>
+        
+        <div className="mt-16 flex justify-center">
+          <div className="relative max-w-sm mx-auto">
+            <img 
+              src="/lovable-uploads/15781f1c-635f-492f-9c1e-7c3a8e851de1.png" 
+              alt="Stripe payment notifications showing successful payments" 
+              className="rounded-2xl shadow-2xl"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent rounded-2xl"></div>
+          </div>
+        </div>
       </div>
     </section>
   );

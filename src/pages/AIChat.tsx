@@ -229,11 +229,11 @@ export default function AIChat() {
         </form>
       </Card>
 
-      <style jsx>{`
+      <style>{`
         .typing-indicator {
           display: flex;
           align-items: center;
-          space: 2px;
+          gap: 2px;
         }
         .typing-indicator span {
           height: 4px;

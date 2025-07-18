@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -20,9 +21,6 @@ export function Navigation() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/library" className="text-foreground hover:text-primary transition-colors">
-              Library
-            </Link>
             <Link to="/pricing" className="text-foreground hover:text-primary transition-colors">
               Pricing
             </Link>
@@ -36,10 +34,10 @@ export function Navigation() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link to="/login">
+            <Link to="/auth">
               <Button variant="ghost">Log In</Button>
             </Link>
-            <Link to="/signup">
+            <Link to="/auth">
               <Button className="gradient-gold text-gold-foreground hover:opacity-90">
                 Start Free Trial
               </Button>
@@ -63,13 +61,6 @@ export function Navigation() {
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-border">
               <Link
-                to="/library"
-                className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                Library
-              </Link>
-              <Link
                 to="/pricing"
                 className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary transition-colors"
                 onClick={() => setIsOpen(false)}
@@ -92,12 +83,12 @@ export function Navigation() {
               </Link>
               <div className="pt-4 pb-3 border-t border-border">
                 <div className="flex items-center space-x-3">
-                  <Link to="/login">
+                  <Link to="/auth">
                     <Button variant="ghost" className="w-full" onClick={() => setIsOpen(false)}>
                       Log In
                     </Button>
                   </Link>
-                  <Link to="/signup">
+                  <Link to="/auth">
                     <Button 
                       className="w-full gradient-gold text-gold-foreground hover:opacity-90"
                       onClick={() => setIsOpen(false)}

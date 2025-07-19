@@ -27,7 +27,7 @@ export const MemberLayout = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen member-portal">
       {/* Sidebar */}
       <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg">
         <div className="flex h-full flex-col">
@@ -91,7 +91,7 @@ export const MemberLayout = () => {
 
       {/* Main Content */}
       <div className="pl-64">
-        <main className="min-h-screen">
+        <main className="min-h-screen bg-gray-50">
           <Outlet />
         </main>
       </div>

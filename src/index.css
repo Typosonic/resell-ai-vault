@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,114 +8,95 @@
   --color-3: 210 100% 63%;
   --color-4: 195 100% 63%;
   --color-5: 90 100% 63%;
-/* AutomationVault.ai Design System - Professional AI/Automation SaaS Theme */
 
 @layer base {
   :root {
-    /* Dark theme base */
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    /* Light theme base - Updated for member portal */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
 
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
 
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
 
     /* AI-themed blue primary */
     --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 98%;
+    --primary-foreground: 210 40% 98%;
 
-    /* Subtle secondary */
-    --secondary: 240 5% 11%;
-    --secondary-foreground: 0 0% 98%;
+    /* Light secondary */
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
 
-    /* Muted backgrounds */
-    --muted: 240 5% 11%;
-    --muted-foreground: 240 5% 65%;
+    /* Light muted backgrounds */
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
     /* Purple accent for premium features */
-    --accent: 270 95% 75%;
-    --accent-foreground: 240 10% 3.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
 
     /* Premium gold for CTAs */
-    --gold: 45 100% 70%;
-    --gold-foreground: 240 10% 3.9%;
-
-    /* Tech gradient colors */
-    --gradient-start: 217 91% 60%;
-    --gradient-middle: 270 95% 75%;
-    --gradient-end: 290 84% 60%;
+    --gold: 45 100% 51%;
+    --gold-foreground: 210 40% 98%;
 
     /* Status colors */
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 210 40% 98%;
     --success: 142 76% 36%;
-    --success-foreground: 0 0% 98%;
+    --success-foreground: 210 40% 98%;
     --warning: 48 96% 53%;
-    --warning-foreground: 240 10% 3.9%;
+    --warning-foreground: 222.2 84% 4.9%;
 
-    /* Borders and inputs */
-    --border: 240 5% 16%;
-    --input: 240 5% 16%;
+    /* Light borders and inputs */
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
     --ring: 217 91% 60%;
 
-    /* Premium effects */
-    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.3);
-    --shadow-gold: 0 0 30px hsl(var(--gold) / 0.4);
-    
-    /* Animations */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Sidebar colors - Light theme */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
     
     --radius: 0.75rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   /* Premium gradients and effects */
   .gradient-primary {
-    background: linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-middle)));
+    background: linear-gradient(135deg, hsl(217 91% 60%), hsl(270 95% 75%));
   }
   
   .gradient-premium {
-    background: linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-middle)), hsl(var(--gradient-end)));
+    background: linear-gradient(135deg, hsl(217 91% 60%), hsl(270 95% 75%), hsl(290 84% 60%));
   }
   
   .gradient-gold {
-    background: linear-gradient(135deg, hsl(var(--gold)), hsl(45 100% 80%));
+    background: linear-gradient(135deg, hsl(45 100% 51%), hsl(45 100% 65%));
   }
   
   .glow-effect {
-    box-shadow: var(--shadow-glow);
+    box-shadow: 0 0 40px hsl(217 91% 60% / 0.3);
   }
   
   .gold-glow {
-    box-shadow: var(--shadow-gold);
+    box-shadow: 0 0 30px hsl(45 100% 51% / 0.4);
   }
   
   .text-gradient {
-    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    background: linear-gradient(135deg, hsl(217 91% 60%), hsl(270 95% 75%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
   
   .text-gold-gradient {
-    background: linear-gradient(135deg, hsl(var(--gold)), hsl(45 100% 80%));
+    background: linear-gradient(135deg, hsl(45 100% 51%), hsl(45 100% 65%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -135,8 +117,8 @@
   }
   
   @keyframes pulse-glow {
-    from { box-shadow: 0 0 20px hsl(var(--primary) / 0.3); }
-    to { box-shadow: 0 0 40px hsl(var(--primary) / 0.6); }
+    from { box-shadow: 0 0 20px hsl(217 91% 60% / 0.3); }
+    to { box-shadow: 0 0 40px hsl(217 91% 60% / 0.6); }
   }
 }
 

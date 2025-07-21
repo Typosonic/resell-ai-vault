@@ -19,6 +19,7 @@ import MemberLibrary from "./pages/MemberLibrary";
 import AutomationDetails from "./pages/AutomationDetails";
 import MyDownloads from "./pages/MyDownloads";
 import AIChat from "./pages/AIChat";
+import WorkflowBuilder from "./pages/WorkflowBuilder";
 import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
@@ -58,6 +59,14 @@ const App = () => (
               </ProtectedRoute>
             }>
               <Route index element={<AutomationDetails />} />
+            </Route>
+            
+            <Route path="/workflow-builder" element={
+              <ProtectedRoute>
+                <MemberLayout />
+              </ProtectedRoute>
+            }>
+              <Route index element={<WorkflowBuilder />} />
             </Route>
             
             <Route path="/downloads" element={

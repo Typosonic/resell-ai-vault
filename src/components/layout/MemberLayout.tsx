@@ -1,4 +1,3 @@
-
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
 import { Link, useLocation, Outlet } from 'react-router-dom';
@@ -10,7 +9,8 @@ import {
   MessageSquare, 
   Settings, 
   LogOut,
-  Bot
+  Bot,
+  Wand2
 } from 'lucide-react';
 
 export const MemberLayout = () => {
@@ -21,6 +21,7 @@ export const MemberLayout = () => {
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: Home },
     { name: 'Library', href: '/library', icon: Library },
+    { name: 'Workflow Builder', href: '/workflow-builder', icon: Wand2 },
     { name: 'My Downloads', href: '/downloads', icon: Download },
     { name: 'AI Chat', href: '/chat', icon: MessageSquare },
     { name: 'Settings', href: '/settings', icon: Settings },

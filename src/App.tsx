@@ -20,6 +20,7 @@ import AutomationDetails from "./pages/AutomationDetails";
 import MyDownloads from "./pages/MyDownloads";
 import AIChat from "./pages/AIChat";
 import WorkflowBuilder from "./pages/WorkflowBuilder";
+import MVPChecklist from "./pages/MVPChecklist";
 import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
@@ -83,6 +84,14 @@ const App = () => (
               </ProtectedRoute>
             }>
               <Route index element={<AIChat />} />
+            </Route>
+            
+            <Route path="/mvp-checklist" element={
+              <ProtectedRoute>
+                <MemberLayout />
+              </ProtectedRoute>
+            }>
+              <Route index element={<MVPChecklist />} />
             </Route>
             
             <Route path="/settings" element={

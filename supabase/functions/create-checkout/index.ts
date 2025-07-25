@@ -25,27 +25,45 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
-    const authHeader = req.headers.get("Authorization")!;
-    const token = authHeader.replace("Bearer ", "");
-    const { data } = await supabaseClient.auth.getUser(token);
-    const user = data.user;
-    if (!user?.email) throw new Error("User not authenticated or email not available");
-    logStep("User authenticated", { userId: user.id, email: user.email });
+    const { plan, userEmail } = await req.json();
+    logStep("Request data received", { plan, userEmail });
 
-    const { plan } = await req.json();
-    logStep("Plan received", { plan });
+    let user = null;
+    let customerEmail = userEmail;
+
+    // Try to get authenticated user if token exists
+    const authHeader = req.headers.get("Authorization");
+    if (authHeader && userEmail) {
+      try {
+        const token = authHeader.replace("Bearer ", "");
+        const { data } = await supabaseClient.auth.getUser(token);
+        user = data.user;
+        if (user?.email) {
+          customerEmail = user.email;
+          logStep("User authenticated", { userId: user.id, email: user.email });
+        }
+      } catch (error) {
+        logStep("Auth check failed, proceeding as guest", { error: error.message });
+      }
+    } else {
+      logStep("No auth header or userEmail, proceeding as guest checkout");
+      // For guest checkout, we'll collect email in Stripe
+      customerEmail = null;
+    }
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { 
       apiVersion: "2023-10-16" 
     });
 
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     let customerId;
-    if (customers.data.length > 0) {
-      customerId = customers.data[0].id;
-      logStep("Found existing customer", { customerId });
-    } else {
-      logStep("No existing customer found");
+    if (customerEmail) {
+      const customers = await stripe.customers.list({ email: customerEmail, limit: 1 });
+      if (customers.data.length > 0) {
+        customerId = customers.data[0].id;
+        logStep("Found existing customer", { customerId });
+      } else {
+        logStep("No existing customer found");
+      }
     }
 
     // Define price based on plan
@@ -59,7 +77,8 @@ serve(async (req) => {
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
-      customer_email: customerId ? undefined : user.email,
+      customer_email: customerId ? undefined : customerEmail,
+      customer_creation: customerId ? undefined : "always",
       line_items: [
         {
           price_data: {
@@ -72,8 +91,12 @@ serve(async (req) => {
         },
       ],
       mode: "subscription",
-      success_url: `${req.headers.get("origin")}/dashboard?success=true`,
+      success_url: `${req.headers.get("origin")}/payment-success?session_id={CHECKOUT_SESSION_ID}&plan=${plan}`,
       cancel_url: `${req.headers.get("origin")}/?canceled=true`,
+      metadata: {
+        plan: plan,
+        userId: user?.id || "guest",
+      }
     });
 
     logStep("Checkout session created", { sessionId: session.id });

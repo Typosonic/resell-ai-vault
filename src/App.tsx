@@ -11,6 +11,7 @@ import { MemberLayout } from "@/components/layout/MemberLayout";
 // Public pages
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
 
 // Protected member pages
@@ -36,6 +37,7 @@ const App = () => (
             {/* Public routes */}
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route path="/signup" element={<Navigate to="/auth" replace />} />
             
             {/* Protected member routes */}

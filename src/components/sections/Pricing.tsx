@@ -71,22 +71,19 @@ export function Pricing() {
   const { toast } = useToast();
 
   const handlePlanClick = async (plan: any) => {
-    if (!user) {
-      // Redirect to auth page for signup
-      window.location.href = "/auth";
-      return;
-    }
-
     if (plan.planId === "agency") {
       // For agency plan, just redirect to contact
       window.location.href = "/contact";
       return;
     }
 
-    // For authenticated users with starter/pro plans, create Stripe checkout
+    // For all users (authenticated and unauthenticated), create Stripe checkout
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { plan: plan.planId }
+        body: { 
+          plan: plan.planId,
+          userEmail: user?.email || null
+        }
       });
 
       if (error) throw error;

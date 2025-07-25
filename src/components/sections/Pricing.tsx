@@ -1,4 +1,7 @@
 import { Pricing as PremiumPricing } from "@/components/ui/pricing";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const plans = [
   {
@@ -16,8 +19,9 @@ const plans = [
     ],
     description: "Perfect for getting started with AI automation",
     buttonText: "Get Started",
-    href: "/signup",
+    href: "/auth",
     isPopular: false,
+    planId: "starter",
   },
   {
     name: "Pro",
@@ -36,8 +40,9 @@ const plans = [
     ],
     description: "Most popular choice for serious entrepreneurs",
     buttonText: "Start Free Trial",
-    href: "/signup",
+    href: "/auth",
     isPopular: true,
+    planId: "pro",
   },
   {
     name: "Agency+",
@@ -57,16 +62,55 @@ const plans = [
     buttonText: "Contact Sales",
     href: "/contact",
     isPopular: false,
+    planId: "agency",
   }
 ];
 
 export function Pricing() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  const handlePlanClick = async (plan: any) => {
+    if (!user) {
+      // Redirect to auth page for signup
+      window.location.href = "/auth";
+      return;
+    }
+
+    if (plan.planId === "agency") {
+      // For agency plan, just redirect to contact
+      window.location.href = "/contact";
+      return;
+    }
+
+    // For authenticated users with starter/pro plans, create Stripe checkout
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { plan: plan.planId }
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        // Open Stripe checkout in a new tab
+        window.open(data.url, '_blank');
+      }
+    } catch (error) {
+      console.error('Error creating checkout:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create checkout session. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <PremiumPricing 
       plans={plans}
       title="Choose your growth plan"
-      description="Start your AI automation business today. All plans include commercial licensing
-and the right to resell as your own."
+      description="Start your AI automation business today. All plans include commercial licensing and the right to resell as your own."
+      onPlanClick={handlePlanClick}
     />
   );
 }

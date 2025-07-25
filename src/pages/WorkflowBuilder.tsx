@@ -16,6 +16,7 @@ import {
   Settings
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function WorkflowBuilder() {
   const [description, setDescription] = useState('');
@@ -38,32 +39,38 @@ export default function WorkflowBuilder() {
     setError(null);
 
     try {
-      const response = await fetch('/api/generate-workflow', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ description }),
+      const { data, error } = await supabase.functions.invoke('generate-workflow', {
+        body: { 
+          problemDescription: description,
+          businessType: 'General',
+          complexity: 'Medium',
+          isChat: false
+        }
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to generate workflow');
+      if (error) {
+        throw new Error(error.message || 'Failed to generate workflow');
       }
 
-      const data = await response.json();
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
       setGeneratedWorkflow(data.workflow);
       
       toast({
         title: "Workflow Generated!",
         description: "Your n8n workflow has been created successfully.",
       });
-    } catch (err) {
-      setError('Failed to generate workflow. Please try again.');
+    } catch (err: any) {
+      const errorMessage = err.message || 'Failed to generate workflow. Please try again.';
+      setError(errorMessage);
       toast({
         title: "Generation Failed",
-        description: "There was an error generating your workflow.",
+        description: errorMessage,
         variant: "destructive",
       });
+      console.error('Workflow generation error:', err);
     } finally {
       setIsGenerating(false);
     }

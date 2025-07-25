@@ -29,6 +29,7 @@ export type Database = {
           thumbnail_url: string | null
           title: string
           updated_at: string
+          workflow_json: Json | null
         }
         Insert: {
           category: string
@@ -44,6 +45,7 @@ export type Database = {
           thumbnail_url?: string | null
           title: string
           updated_at?: string
+          workflow_json?: Json | null
         }
         Update: {
           category?: string
@@ -59,6 +61,7 @@ export type Database = {
           thumbnail_url?: string | null
           title?: string
           updated_at?: string
+          workflow_json?: Json | null
         }
         Relationships: []
       }

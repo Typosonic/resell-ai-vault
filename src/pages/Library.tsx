@@ -2,6 +2,7 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/sections/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import WorkflowUpload from "@/components/WorkflowUpload";
 import { 
   Search, 
   Filter, 
@@ -12,7 +13,8 @@ import {
   Bot,
   MessageSquare,
   BarChart3,
-  Zap
+  Zap,
+  Plus
 } from "lucide-react";
 
 // Mock automation data
@@ -147,6 +149,11 @@ export default function Library() {
       {/* Automations Grid */}
       <section className="py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Upload Workflow Section */}
+          <div className="mb-12 flex justify-center">
+            <WorkflowUpload onUploadComplete={() => window.location.reload()} />
+          </div>
+
           {/* Access Notice */}
           <div className="mb-12 p-6 rounded-2xl bg-card border border-border text-center">
             <Lock className="w-12 h-12 text-muted-foreground mx-auto mb-4" />

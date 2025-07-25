@@ -115,7 +115,7 @@ export default function MemberLibrary() {
   };
 
   return (
-    <div className="p-8">
+    <div className="member-portal p-8 min-h-screen bg-background">
       {/* Header */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-6">

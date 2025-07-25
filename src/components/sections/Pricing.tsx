@@ -3,12 +3,13 @@ import { Pricing as PremiumPricing } from "@/components/ui/pricing";
 const plans = [
   {
     name: "Starter",
-    price: "49",
-    yearlyPrice: "39",
+    price: "30",
+    yearlyPrice: "24",
     period: "month",
     features: [
       "Access to 25+ AI automations",
       "Commercial resell license",
+      "Agent Builder access",
       "Basic support",
       "Monthly updates",
       "Standard templates"
@@ -20,12 +21,13 @@ const plans = [
   },
   {
     name: "Pro",
-    price: "99",
-    yearlyPrice: "79",
+    price: "50",
+    yearlyPrice: "40",
     period: "month",
     features: [
       "Access to ALL 100+ automations",
       "Commercial resell license",
+      "Agent Builder access",
       "Priority support",
       "Weekly updates",
       "Premium templates",

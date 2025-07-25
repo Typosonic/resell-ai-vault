@@ -9,7 +9,7 @@ export const useOptimizedAutomations = (searchQuery?: string, categoryFilter?: s
     queryFn: async () => {
       const { data, error } = await supabase
         .from('automations')
-        .select('id, title, description, category, created_at')
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;

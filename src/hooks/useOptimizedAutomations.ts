@@ -16,7 +16,6 @@ export const useOptimizedAutomations = (searchQuery?: string, categoryFilter?: s
       return data;
     },
     staleTime: 2 * 60 * 1000, // 2 minutes
-    cacheTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const filteredAutomations = useMemo(() => {

@@ -59,6 +59,8 @@ The workflow should be comprehensive and include:
 Return ONLY the n8n workflow JSON, no additional text or explanations.`;
     }
 
+    console.log('Making request to Claude API...');
+    
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -78,11 +80,17 @@ Return ONLY the n8n workflow JSON, no additional text or explanations.`;
       }),
     });
 
+    console.log('Claude API response status:', response.status);
+
     if (!response.ok) {
-      throw new Error(`Claude API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error('Claude API error response:', errorText);
+      throw new Error(`Claude API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
+    console.log('Claude API response received successfully');
+    
     const responseText = data.content[0].text;
 
     if (isChat) {
@@ -98,6 +106,7 @@ Return ONLY the n8n workflow JSON, no additional text or explanations.`;
       try {
         parsedWorkflow = JSON.parse(responseText);
       } catch (e) {
+        console.error('JSON parsing error:', e);
         throw new Error('Generated workflow is not valid JSON');
       }
 

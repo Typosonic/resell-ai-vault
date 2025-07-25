@@ -1,6 +1,8 @@
+
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAutomation } from '@/hooks/useAutomations';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -51,45 +53,63 @@ export default function AIChat() {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentMessage = newMessage;
     setNewMessage('');
     setIsTyping(true);
 
-    // Simulate AI response - replace with actual API call later
-    setTimeout(() => {
+    try {
+      // Create context for the AI based on current automation and conversation
+      let context = "You are an AI assistant specialized in helping users with automation workflows and business processes.";
+      
+      if (automation) {
+        context += ` The user is currently asking about the "${automation.title}" automation, which is ${automation.description}. This automation is categorized as ${automation.category} and has a ${automation.difficulty} difficulty level.`;
+      }
+
+      // Add recent conversation context
+      const recentMessages = messages.slice(-5).map(msg => 
+        `${msg.sender === 'user' ? 'User' : 'Assistant'}: ${msg.content}`
+      ).join('\n');
+      
+      if (recentMessages) {
+        context += `\n\nRecent conversation:\n${recentMessages}`;
+      }
+
+      const { data, error } = await supabase.functions.invoke('generate-workflow', {
+        body: {
+          problemDescription: currentMessage,
+          businessType: automation?.category || 'general',
+          complexity: automation?.difficulty || 'intermediate',
+          context: context,
+          isChat: true
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        content: getSimulatedResponse(newMessage, automation),
+        content: data?.response || "I'm sorry, I couldn't process that request. Please try again.",
         sender: 'ai',
         timestamp: new Date(),
       };
       
       setMessages(prev => [...prev, aiResponse]);
-      setIsTyping(false);
-    }, 1500);
-  };
-
-  const getSimulatedResponse = (userMessage: string, automation: any) => {
-    const message = userMessage.toLowerCase();
-    
-    if (automation) {
-      if (message.includes('how') || message.includes('setup') || message.includes('implement')) {
-        return `To implement the "${automation.title}" automation, you'll need to follow these general steps:\n\n1. Download the automation files\n2. Review the documentation included\n3. Configure the settings for your specific use case\n4. Test the automation in a safe environment\n5. Deploy to production\n\nThis automation is rated ${automation.difficulty} level, so ${automation.difficulty === 'beginner' ? 'it should be straightforward to set up' : automation.difficulty === 'intermediate' ? 'you may need some technical knowledge' : 'advanced technical skills are recommended'}.\n\nWould you like more specific guidance on any of these steps?`;
-      }
+    } catch (error) {
+      console.error('Error sending message:', error);
       
-      if (message.includes('what') || message.includes('does') || message.includes('purpose')) {
-        return `The "${automation.title}" is designed for ${automation.category.toLowerCase()} purposes. Here's what it does:\n\n${automation.description}\n\nKey features include:\n• Automated workflow processing\n• Integration capabilities\n• Customizable settings\n• Performance monitoring\n\nThis automation has been downloaded ${automation.downloads} times and has a ${automation.rating}/5 rating from users.\n\nWould you like to know more about specific features or implementation details?`;
-      }
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: "I'm sorry, I'm having trouble connecting right now. Please try again in a moment.",
+        sender: 'ai',
+        timestamp: new Date(),
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsTyping(false);
     }
-    
-    if (message.includes('recommend') || message.includes('suggest') || message.includes('best')) {
-      return "I'd be happy to recommend automations! To give you the best suggestions, could you tell me:\n\n• What type of business or use case you have?\n• What processes you'd like to automate?\n• Your technical experience level?\n• Any specific tools or platforms you're using?\n\nWith this information, I can recommend the most suitable automations from our library.";
-    }
-    
-    if (message.includes('help') || message.includes('guide') || message.includes('tutorial')) {
-      return "I'm here to help! I can assist you with:\n\n🔧 **Implementation guidance** - Step-by-step setup instructions\n📊 **Automation selection** - Finding the right tools for your needs\n🛠️ **Troubleshooting** - Solving common issues\n💡 **Best practices** - Tips for optimal performance\n🔗 **Integration help** - Connecting with your existing tools\n\nWhat specific area would you like help with?";
-    }
-    
-    return "That's a great question! While I'm still learning and don't have access to live AI yet, I'm designed to help you with automation questions. In the full version, I'll be able to provide detailed answers about:\n\n• How to set up specific automations\n• Troubleshooting common issues\n• Recommending the best automations for your needs\n• Integration guidance\n\nFor now, you can explore our automation library and download the ones that interest you. Is there anything specific about automations you'd like to discuss?";
   };
 
   const quickQuestions = [

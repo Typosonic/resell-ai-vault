@@ -13,14 +13,29 @@ serve(async (req) => {
   }
 
   try {
-    const { problemDescription, businessType, complexity } = await req.json();
+    const { problemDescription, businessType, complexity, context, isChat } = await req.json();
     
     const claudeApiKey = Deno.env.get('CLAUDE_API_KEY');
     if (!claudeApiKey) {
       throw new Error('Claude API key not configured');
     }
 
-    const prompt = `Generate a complete n8n workflow JSON that solves the following business problem:
+    let prompt;
+    
+    if (isChat) {
+      // Chat mode - more conversational and helpful
+      prompt = `You are an AI assistant specialized in helping users with automation workflows and business processes. You are knowledgeable about n8n, Zapier, Make.com, and other automation platforms.
+
+${context}
+
+User's question: ${problemDescription}
+
+Please provide a helpful, conversational response that addresses their question. If they're asking about specific automations, provide practical guidance. If they need recommendations, ask clarifying questions. Keep your response concise but informative.
+
+Focus on being helpful and educational rather than just generating workflow JSON. If they specifically ask for a workflow, you can offer to create one, but otherwise focus on answering their question conversationally.`;
+    } else {
+      // Original workflow generation mode
+      prompt = `Generate a complete n8n workflow JSON that solves the following business problem:
 
 Problem: ${problemDescription}
 Business Type: ${businessType}
@@ -42,6 +57,7 @@ The workflow should be comprehensive and include:
 - Error handling and logging
 
 Return ONLY the n8n workflow JSON, no additional text or explanations.`;
+    }
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -67,25 +83,34 @@ Return ONLY the n8n workflow JSON, no additional text or explanations.`;
     }
 
     const data = await response.json();
-    const workflowJson = data.content[0].text;
+    const responseText = data.content[0].text;
 
-    // Try to parse the JSON to validate it
-    let parsedWorkflow;
-    try {
-      parsedWorkflow = JSON.parse(workflowJson);
-    } catch (e) {
-      throw new Error('Generated workflow is not valid JSON');
+    if (isChat) {
+      // Return conversational response
+      return new Response(JSON.stringify({ 
+        response: responseText
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    } else {
+      // Try to parse as JSON workflow
+      let parsedWorkflow;
+      try {
+        parsedWorkflow = JSON.parse(responseText);
+      } catch (e) {
+        throw new Error('Generated workflow is not valid JSON');
+      }
+
+      return new Response(JSON.stringify({ 
+        workflow: parsedWorkflow,
+        rawJson: responseText 
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    return new Response(JSON.stringify({ 
-      workflow: parsedWorkflow,
-      rawJson: workflowJson 
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-
   } catch (error) {
-    console.error('Error generating workflow:', error);
+    console.error('Error in generate-workflow function:', error);
     return new Response(JSON.stringify({ 
       error: error.message 
     }), {

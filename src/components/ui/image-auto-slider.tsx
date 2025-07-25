@@ -1,7 +1,7 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 
-export const Component = () => {
+const ImageAutoSlider = memo(() => {
   // Images for the infinite scroll - using the uploaded dashboard screenshots
   const images = [
     "/lovable-uploads/438e96b7-068f-4f0d-ad3a-30a745df783f.png",
@@ -76,6 +76,7 @@ export const Component = () => {
                     alt={`Dashboard screenshot ${(index % images.length) + 1}`}
                     className="w-full h-full object-cover"
                     loading="lazy"
+                    decoding="async"
                   />
                 </div>
               ))}
@@ -88,4 +89,8 @@ export const Component = () => {
       </div>
     </>
   );
-};
+});
+
+ImageAutoSlider.displayName = 'ImageAutoSlider';
+
+export { ImageAutoSlider as Component };

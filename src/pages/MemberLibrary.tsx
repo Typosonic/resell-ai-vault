@@ -1,58 +1,53 @@
 
-import { useState } from 'react';
-import { useAutomations } from '@/hooks/useAutomations';
+import { useState, useMemo } from 'react';
+import { useOptimizedAutomations } from '@/hooks/useOptimizedAutomations';
+import { useDownloads } from '@/hooks/useAutomations';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Search, 
-  Filter,
-  Star,
-  Download,
-  Clock,
-  Eye
-} from 'lucide-react';
-
-const categories = [
-  'all',
-  'Customer Service',
-  'Marketing',
-  'Sales',
-  'Analytics',
-  'Operations'
-];
-
-const difficulties = ['beginner', 'intermediate', 'advanced'];
+import { Search, Download, Clock, Filter } from 'lucide-react';
 
 export default function MemberLibrary() {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
-  
-  const { automations, isLoading } = useAutomations(searchQuery, categoryFilter);
+  const { automations, isLoading } = useOptimizedAutomations(searchQuery, categoryFilter);
+  const { downloadAutomation, isDownloading } = useDownloads();
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'beginner': return 'bg-green-100 text-green-800';
-      case 'intermediate': return 'bg-yellow-100 text-yellow-800';
-      case 'advanced': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+  const categories = useMemo(() => {
+    const uniqueCategories = [...new Set(automations?.map(a => a.category) || [])];
+    return uniqueCategories.filter(Boolean);
+  }, [automations]);
+
+  const handleDownload = (automationId: string) => {
+    downloadAutomation(automationId);
   };
 
   if (isLoading) {
     return (
-      <div className="member-portal">
+      <div className="member-portal min-h-screen bg-white">
         <div className="p-8">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-            <div className="h-12 bg-gray-200 rounded"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-64 bg-gray-200 rounded-lg"></div>
-              ))}
-            </div>
+          <div className="mb-8">
+            <Skeleton className="h-8 w-64 mb-2" />
+            <Skeleton className="h-4 w-96" />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <Card key={i} className="bg-white border-gray-200">
+                <CardHeader>
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-4 w-full mb-2" />
+                  <Skeleton className="h-4 w-2/3" />
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </div>
@@ -60,22 +55,20 @@ export default function MemberLibrary() {
   }
 
   return (
-    <div className="member-portal">
+    <div className="member-portal min-h-screen bg-white">
       <div className="p-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Automation Library
-          </h1>
-          <p className="text-gray-600">
-            Discover and download powerful automations for your business
+          <h1 className="text-3xl font-bold text-gray-900">Automation Library</h1>
+          <p className="text-gray-600 mt-2">
+            Discover and download powerful automation workflows for your business.
           </p>
         </div>
 
-        {/* Search and Filters */}
-        <div className="mb-8 space-y-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+        {/* Search and Filter */}
+        <div className="mb-8 flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
             <Input
               placeholder="Search automations..."
               value={searchQuery}
@@ -83,89 +76,66 @@ export default function MemberLibrary() {
               className="pl-10 bg-white border-gray-300"
             />
           </div>
-
-          <div className="flex flex-wrap gap-2">
-            <div className="flex items-center space-x-2">
-              <Filter className="h-4 w-4 text-gray-600" />
-              <span className="text-sm font-medium text-gray-700">Category:</span>
-            </div>
-            {categories.map((category) => (
-              <Button
-                key={category}
-                variant={categoryFilter === category ? "default" : "outline"}
-                size="sm"
-                onClick={() => setCategoryFilter(category)}
-                className="capitalize"
-              >
-                {category === 'all' ? 'All Categories' : category}
-              </Button>
-            ))}
-          </div>
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger className="w-full sm:w-48 bg-white border-gray-300">
+              <Filter className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Filter by category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {categories.map((category) => (
+                <SelectItem key={category} value={category}>
+                  {category}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Automations Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {automations?.map((automation) => (
-            <Card key={automation.id} className="hover:shadow-lg transition-shadow bg-white border-gray-200">
-              <CardContent className="p-6">
-                <div className="mb-4">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-semibold text-gray-900 line-clamp-2">
-                      {automation.title}
-                    </h3>
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Star className="h-4 w-4 text-yellow-500 mr-1" />
-                      {automation.rating}
-                    </div>
-                  </div>
-                  
-                  <p className="text-gray-600 text-sm line-clamp-3 mb-3">
-                    {automation.description}
-                  </p>
-
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    <Badge variant="secondary" className="bg-gray-100 text-gray-800">{automation.category}</Badge>
-                    <Badge className={getDifficultyColor(automation.difficulty || 'beginner')}>
-                      {automation.difficulty}
+            <Card key={automation.id} className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between">
+                  <CardTitle className="text-lg font-semibold text-gray-900 line-clamp-2">
+                    {automation.title}
+                  </CardTitle>
+                  {automation.category && (
+                    <Badge variant="secondary" className="ml-2 bg-gray-100 text-gray-700">
+                      {automation.category}
                     </Badge>
-                  </div>
-
-                  <div className="flex items-center text-sm text-gray-500 space-x-4 mb-4">
-                    <div className="flex items-center">
-                      <Download className="h-4 w-4 mr-1" />
-                      {automation.downloads?.toLocaleString() || 0}
-                    </div>
-                    <div className="flex items-center">
-                      <Clock className="h-4 w-4 mr-1" />
-                      {new Date(automation.created_at).toLocaleDateString()}
-                    </div>
-                  </div>
-
-                  {automation.tags && automation.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-4">
-                      {automation.tags.slice(0, 3).map((tag, index) => (
-                        <span
-                          key={index}
-                          className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                      {automation.tags.length > 3 && (
-                        <span className="text-xs text-gray-500">
-                          +{automation.tags.length - 3} more
-                        </span>
-                      )}
-                    </div>
                   )}
                 </div>
-
-                <Link to={`/automation/${automation.id}`}>
-                  <Button className="w-full">
-                    <Eye className="h-4 w-4 mr-2" />
-                    View Details
-                  </Button>
-                </Link>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                  {automation.description}
+                </p>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center text-xs text-gray-500">
+                    <Clock className="h-3 w-3 mr-1" />
+                    {new Date(automation.created_at).toLocaleDateString()}
+                  </div>
+                  
+                  <div className="flex space-x-2">
+                    <Link to={`/automation/${automation.id}`}>
+                      <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                        View Details
+                      </Button>
+                    </Link>
+                    <Button
+                      onClick={() => handleDownload(automation.id)}
+                      disabled={isDownloading}
+                      size="sm"
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      <Download className="h-4 w-4 mr-1" />
+                      {isDownloading ? 'Downloading...' : 'Download'}
+                    </Button>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           ))}
@@ -173,15 +143,7 @@ export default function MemberLibrary() {
 
         {automations?.length === 0 && (
           <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              <Search className="h-12 w-12 mx-auto" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No automations found
-            </h3>
-            <p className="text-gray-600">
-              Try adjusting your search or filter criteria
-            </p>
+            <p className="text-gray-500 text-lg">No automations found matching your search.</p>
           </div>
         )}
       </div>

@@ -1,6 +1,6 @@
 
 import { useAuth } from '@/contexts/AuthContext';
-import { useProfile } from '@/hooks/useProfile';
+import { useOptimizedProfile } from '@/hooks/useOptimizedProfile';
 import { useDownloads } from '@/hooks/useAutomations';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -13,40 +13,47 @@ import {
   Calendar,
   Crown
 } from 'lucide-react';
+import { useMemo } from 'react';
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const { profile } = useProfile();
+  const { profile } = useOptimizedProfile();
   const { downloads } = useDownloads();
 
-  const currentMonth = new Date().toLocaleString('default', { month: 'long' });
-  const currentMonthDownloads = downloads?.filter(download => {
-    const downloadDate = new Date(download.download_date);
-    const now = new Date();
-    return downloadDate.getMonth() === now.getMonth() && 
-           downloadDate.getFullYear() === now.getFullYear();
-  }).length || 0;
+  const stats = useMemo(() => {
+    const currentMonth = new Date().toLocaleString('default', { month: 'long' });
+    const currentMonthDownloads = downloads?.filter(download => {
+      const downloadDate = new Date(download.download_date);
+      const now = new Date();
+      return downloadDate.getMonth() === now.getMonth() && 
+             downloadDate.getFullYear() === now.getFullYear();
+    }).length || 0;
 
-  const stats = [
-    {
-      title: 'Downloads This Month',
-      value: currentMonthDownloads,
-      icon: Download,
-      color: 'text-blue-600',
-    },
-    {
-      title: 'Total Downloads',
-      value: downloads?.length || 0,
-      icon: TrendingUp,
-      color: 'text-green-600',
-    },
-    {
-      title: 'Subscription',
-      value: profile?.subscription_status || 'Free',
-      icon: Crown,
-      color: 'text-purple-600',
-    },
-  ];
+    return [
+      {
+        title: 'Downloads This Month',
+        value: currentMonthDownloads,
+        icon: Download,
+        color: 'text-blue-600',
+      },
+      {
+        title: 'Total Downloads',
+        value: downloads?.length || 0,
+        icon: TrendingUp,
+        color: 'text-green-600',
+      },
+      {
+        title: 'Subscription',
+        value: profile?.subscription_status || 'Free',
+        icon: Crown,
+        color: 'text-purple-600',
+      },
+    ];
+  }, [downloads, profile]);
+
+  const recentDownloads = useMemo(() => {
+    return downloads?.slice(0, 5) || [];
+  }, [downloads]);
 
   return (
     <div className="member-portal min-h-screen bg-white">
@@ -127,7 +134,7 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Downloads */}
-        {downloads && downloads.length > 0 && (
+        {recentDownloads.length > 0 && (
           <Card className="mt-8 bg-white border-gray-200 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center text-gray-900">
@@ -137,7 +144,7 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {downloads.slice(0, 5).map((download) => (
+                {recentDownloads.map((download) => (
                   <div key={download.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
                     <div>
                       <h4 className="font-medium text-gray-900">
@@ -155,7 +162,7 @@ export default function Dashboard() {
                   </div>
                 ))}
               </div>
-              {downloads.length > 5 && (
+              {downloads && downloads.length > 5 && (
                 <div className="mt-4 text-center">
                   <Link to="/downloads">
                     <Button variant="outline">View All Downloads</Button>

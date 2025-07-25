@@ -120,7 +120,7 @@ export default function MemberLibrary() {
       <div className="mb-8">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold mb-2">
+            <h1 className="text-3xl font-bold mb-2 text-foreground">
               Automation <span className="text-gradient">Library</span>
             </h1>
             <p className="text-muted-foreground">
@@ -171,11 +171,11 @@ export default function MemberLibrary() {
       {!user && (
         <div className="mb-8 p-6 rounded-lg bg-card border border-border text-center">
           <Lock className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
-          <h3 className="text-lg font-semibold mb-2">Sign in to Download</h3>
+          <h3 className="text-lg font-semibold mb-2 text-card-foreground">Sign in to Download</h3>
           <p className="text-muted-foreground mb-4">
             Create an account to download these automations for free
           </p>
-          <Button>Sign In</Button>
+          <Button className="bg-primary text-primary-foreground hover:bg-primary/90">Sign In</Button>
         </div>
       )}
 
@@ -191,7 +191,7 @@ export default function MemberLibrary() {
       {!isLoading && automations.length === 0 && (
         <div className="text-center py-12">
           <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-xl font-semibold mb-2">No automations found</h3>
+          <h3 className="text-xl font-semibold mb-2 text-foreground">No automations found</h3>
           <p className="text-muted-foreground">
             {searchQuery || categoryFilter !== "All" 
               ? "Try adjusting your search or filter criteria." 
@@ -218,7 +218,7 @@ export default function MemberLibrary() {
                 </div>
 
                 {/* Content */}
-                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">
+                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors text-card-foreground">
                   {automation.title}
                 </h3>
                 
@@ -232,7 +232,7 @@ export default function MemberLibrary() {
                     {automation.tags.map((tag: string) => (
                       <span 
                         key={tag}
-                        className="px-2 py-1 bg-secondary rounded text-xs text-muted-foreground"
+                        className="px-2 py-1 bg-secondary text-secondary-foreground rounded text-xs"
                       >
                         {tag}
                       </span>
@@ -252,7 +252,7 @@ export default function MemberLibrary() {
                       <span>{automation.downloads || 0}</span>
                     </div>
                   </div>
-                  <span className="text-xs bg-secondary px-2 py-1 rounded">
+                  <span className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded">
                     {automation.difficulty || 'Beginner'}
                   </span>
                 </div>

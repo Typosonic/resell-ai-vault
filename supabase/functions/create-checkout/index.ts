@@ -13,6 +13,8 @@ const logStep = (step: string, details?: any) => {
 };
 
 serve(async (req) => {
+  logStep("Request received", { method: req.method });
+  
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -34,9 +36,22 @@ serve(async (req) => {
         status: 500,
       });
     }
-    logStep("Stripe key found");
+    logStep("Stripe key found", { keyLength: stripeKey.length });
 
-    const { plan, userEmail } = await req.json();
+    // Parse request body
+    let requestData;
+    try {
+      requestData = await req.json();
+      logStep("Request data parsed", requestData);
+    } catch (parseError) {
+      logStep("ERROR: Failed to parse request body", { error: parseError.message });
+      return new Response(JSON.stringify({ error: "Invalid request body" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400,
+      });
+    }
+
+    const { plan, userEmail } = requestData;
     logStep("Request data received", { plan, userEmail });
 
     let user = null;
@@ -127,7 +142,8 @@ serve(async (req) => {
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    logStep("ERROR", { message: errorMessage });
+    const errorStack = error instanceof Error ? error.stack : '';
+    logStep("ERROR", { message: errorMessage, stack: errorStack });
     return new Response(JSON.stringify({ error: errorMessage }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,

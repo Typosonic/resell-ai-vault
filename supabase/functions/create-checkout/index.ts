@@ -13,11 +13,16 @@ const logStep = (step: string, details?: any) => {
 };
 
 serve(async (req) => {
-  logStep("Request received", { method: req.method, url: req.url });
+  logStep("Request received", { method: req.method });
   
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+
+  const supabaseClient = createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_ANON_KEY") ?? ""
+  );
 
   try {
     logStep("Function started");
@@ -33,37 +38,16 @@ serve(async (req) => {
     }
     logStep("Stripe key found", { keyLength: stripeKey.length });
 
-    // Parse request body with better error handling
+    // Parse request body
     let requestData;
-    const contentType = req.headers.get("content-type");
-    logStep("Content type", { contentType });
-
-    if (req.method === "POST") {
-      try {
-        const rawBody = await req.text();
-        logStep("Raw body received", { body: rawBody, length: rawBody.length });
-        
-        if (!rawBody || rawBody.trim() === "") {
-          throw new Error("Empty request body");
-        }
-        
-        requestData = JSON.parse(rawBody);
-        logStep("Request data parsed successfully", requestData);
-      } catch (parseError) {
-        logStep("ERROR: Failed to parse request body", { 
-          error: parseError.message,
-          contentType: req.headers.get("content-type")
-        });
-        return new Response(JSON.stringify({ error: "Invalid or empty request body" }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 400,
-        });
-      }
-    } else {
-      logStep("ERROR: Invalid HTTP method", { method: req.method });
-      return new Response(JSON.stringify({ error: "Method not allowed" }), {
+    try {
+      requestData = await req.json();
+      logStep("Request data parsed", requestData);
+    } catch (parseError) {
+      logStep("ERROR: Failed to parse request body", { error: parseError.message });
+      return new Response(JSON.stringify({ error: "Invalid request body" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 405,
+        status: 400,
       });
     }
 

@@ -25,6 +25,17 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
+    // Check if Stripe key is available
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeKey) {
+      logStep("ERROR: STRIPE_SECRET_KEY not found");
+      return new Response(JSON.stringify({ error: "Stripe configuration missing" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500,
+      });
+    }
+    logStep("Stripe key found");
+
     const { plan, userEmail } = await req.json();
     logStep("Request data received", { plan, userEmail });
 
@@ -51,18 +62,25 @@ serve(async (req) => {
       customerEmail = null;
     }
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { 
+    logStep("Initializing Stripe client");
+    const stripe = new Stripe(stripeKey, { 
       apiVersion: "2023-10-16" 
     });
 
     let customerId;
     if (customerEmail) {
-      const customers = await stripe.customers.list({ email: customerEmail, limit: 1 });
-      if (customers.data.length > 0) {
-        customerId = customers.data[0].id;
-        logStep("Found existing customer", { customerId });
-      } else {
-        logStep("No existing customer found");
+      logStep("Looking for existing customer", { customerEmail });
+      try {
+        const customers = await stripe.customers.list({ email: customerEmail, limit: 1 });
+        if (customers.data.length > 0) {
+          customerId = customers.data[0].id;
+          logStep("Found existing customer", { customerId });
+        } else {
+          logStep("No existing customer found");
+        }
+      } catch (error) {
+        logStep("Error checking customer", { error: error.message });
+        // Continue without customer ID - Stripe will create new customer
       }
     }
 
@@ -74,6 +92,13 @@ serve(async (req) => {
       priceAmount = 5000; // $50 for pro
       planName = "Pro";
     }
+
+    logStep("Creating checkout session", { 
+      planName, 
+      priceAmount, 
+      customerId: customerId || "new customer",
+      customerEmail: customerEmail || "collect in stripe"
+    });
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,

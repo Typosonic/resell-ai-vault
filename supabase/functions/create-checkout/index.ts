@@ -84,18 +84,18 @@ serve(async (req) => {
       }
     }
 
-    // Define price based on plan
-    let priceAmount = 3000; // $30 for starter
+    // Define price ID based on plan
+    let priceId = "price_1RopG3CtaXu4fZnITLJyh3bU"; // $30 starter plan
     let planName = "Starter";
     
     if (plan === "pro") {
-      priceAmount = 5000; // $50 for pro
+      priceId = "price_1RopHYCtaXu4fZnIXXwuvMBw"; // $50 pro plan
       planName = "Pro";
     }
 
     logStep("Creating checkout session", { 
       planName, 
-      priceAmount, 
+      priceId, 
       customerId: customerId || "new customer",
       customerEmail: customerEmail || "collect in stripe"
     });
@@ -106,12 +106,7 @@ serve(async (req) => {
       customer_creation: customerId ? undefined : "always",
       line_items: [
         {
-          price_data: {
-            currency: "usd",
-            product_data: { name: `${planName} Subscription` },
-            unit_amount: priceAmount,
-            recurring: { interval: "month" },
-          },
+          price: priceId,
           quantity: 1,
         },
       ],

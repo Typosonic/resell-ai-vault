@@ -79,6 +79,8 @@ export function Pricing() {
 
     // For all users (authenticated and unauthenticated), create Stripe checkout
     try {
+      console.log('Calling create-checkout with:', { plan: plan.planId, userEmail: user?.email || null });
+      
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: { 
           plan: plan.planId,
@@ -86,17 +88,25 @@ export function Pricing() {
         }
       });
 
-      if (error) throw error;
+      console.log('Response from create-checkout:', { data, error });
+
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw new Error(error.message || 'Unknown error occurred');
+      }
 
       if (data?.url) {
+        console.log('Opening checkout URL:', data.url);
         // Open Stripe checkout in a new tab
         window.open(data.url, '_blank');
+      } else {
+        throw new Error('No checkout URL returned');
       }
     } catch (error) {
       console.error('Error creating checkout:', error);
       toast({
         title: "Error",
-        description: "Failed to create checkout session. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to create checkout session. Please try again.",
         variant: "destructive",
       });
     }

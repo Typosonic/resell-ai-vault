@@ -85,14 +85,22 @@ export function Pricing() {
         body: { 
           plan: plan.planId,
           userEmail: user?.email || null
+        },
+        headers: {
+          'Content-Type': 'application/json'
         }
       });
 
-      console.log('Response from create-checkout:', { data, error });
+      console.log('Full response from create-checkout:', { data, error });
 
       if (error) {
-        console.error('Supabase function error:', error);
-        throw new Error(error.message || 'Unknown error occurred');
+        console.error('Supabase function error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
+        throw new Error(`Function error: ${error.message}`);
       }
 
       if (data?.url) {
@@ -100,7 +108,8 @@ export function Pricing() {
         // Open Stripe checkout in a new tab
         window.open(data.url, '_blank');
       } else {
-        throw new Error('No checkout URL returned');
+        console.error('No URL in response data:', data);
+        throw new Error('No checkout URL returned from Stripe');
       }
     } catch (error) {
       console.error('Error creating checkout:', error);
